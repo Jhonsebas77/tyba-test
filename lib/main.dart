@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tyba_test/config/userPreferences/user_preferences.dart';
 import 'package:tyba_test/src/bloc/provider_bloc.dart';
-import 'package:tyba_test/src/config/userPreferences/user_preferences.dart';
 import 'package:tyba_test/src/pages/default_page.dart';
 import 'package:tyba_test/src/routes/routes.dart';
 

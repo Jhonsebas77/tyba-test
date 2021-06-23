@@ -1,0 +1,19 @@
+# flutter pub run environment_config:generate --config=lib/config/env/env_config.yaml
+environment_config:
+  path: config/env/env_config.dart
+  fields:
+    ANDROID_MAPS_API_KEY:
+      env_var: ANDROID_MAPS_API_KEY
+      default: 'AIzaSyBBdgkGH6bq9rcrjA-PqJBaJBU7jvMQBYM'
+      dotenv: true
+    IOS_MAPS_API_KEY:
+      env_var: IOS_MAPS_API_KEY
+      default: 'AIzaSyBBdgkGH6bq9rcrjA-PqJBaJBU7jvMQBYM'
+      dotenv: true
+    APP_LABEL:
+      env_var: APP_LABEL
+      default: '¿Donde Comer?'
+      dotenv: true
+        
+  imports:
+    - dart:io
