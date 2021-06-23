@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
-import 'package:tyba_test/src/config/validators.dart';
+import 'package:tyba_test/config/validators.dart';
 
 class LoginBloc with Validators {
   final _emailController = BehaviorSubject<String>();

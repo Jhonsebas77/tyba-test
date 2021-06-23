@@ -17,6 +17,9 @@ dependencies:
   http: null
   shared_preferences: null
   rxdart: null
+  environment_config: null
+  flutter_config: null
+  google_maps_flutter: 1.2.0
 
 dev_dependencies:
   flutter_test:

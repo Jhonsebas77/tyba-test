@@ -75,7 +75,15 @@ class DataSearch extends SearchDelegate {
                       (_place) {
                         return SearchListItem(
                           place: _place,
-                          onTap: () {},
+                          onTap: () {
+                            showResults(context);
+                            placeProvider.savePlace(_place);
+                            Navigator.pushNamed(
+                              context,
+                              'detail',
+                              arguments: _place,
+                            );
+                          },
                         );
                       },
                     ).toList(),

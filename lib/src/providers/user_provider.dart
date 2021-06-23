@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:tyba_test/src/config/userPreferences/user_preferences.dart';
+import 'package:tyba_test/config/userPreferences/user_preferences.dart';
 
 class UserProvider {
   final String _firebaseToken = 'AIzaSyCuAXz-kyq5z5-NHzaI4jkbQHvwEZK58pc';
