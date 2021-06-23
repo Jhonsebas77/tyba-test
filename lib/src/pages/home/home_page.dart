@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tyba_test/src/models/places_model.dart';
 import 'package:tyba_test/src/pages/home/search/search_delegate.dart';
+import 'package:tyba_test/src/pages/home/widget/recentSearch.dart';
+import 'package:tyba_test/src/pages/home/widget/recentSearch_empty.dart';
 import 'package:tyba_test/src/pages/login/login_page.dart';
+import 'package:tyba_test/src/providers/places_provider.dart';
 import 'package:tyba_test/src/providers/user_provider.dart';
 import 'package:tyba_test/src/utils/utils.dart';
 
@@ -13,8 +17,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final userProvider = new UserProvider();
+  final placesProvider = new PlacesProvider();
   @override
   Widget build(BuildContext context) {
+    placesProvider.getRecentPlaces();
     return Scaffold(
       appBar: AppBar(
         title: Text('Bienvenido'),
@@ -34,8 +40,40 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 20,
                 ),
-                Center(
-                  child: _buildSearchButton(context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Image(
+                      image: AssetImage(
+                        'assets/img/logo_purple.webp',
+                      ),
+                      height: 90,
+                      width: 90,
+                      fit: BoxFit.contain,
+                    ),
+                    _buildSearchButton(context),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: 250,
+                  child: ListTile(
+                    title: Text(
+                      'Busquedas recientes',
+                    ),
+                    leading: Icon(
+                      Icons.access_time,
+                      color: Colors.deepPurple,
+                    ),
+                    dense: true,
+                  ),
+                ),
+                SizedBox(
+                  height: 90,
+                  width: 350,
+                  child: _buildRecentSearch(),
                 ),
               ],
             ),
@@ -95,6 +133,25 @@ class _HomePageState extends State<HomePage> {
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildRecentSearch() {
+    return StreamBuilder(
+      stream: placesProvider.placeStream,
+      builder: (BuildContext context, AsyncSnapshot<List<Place>> snapshot) {
+        if (snapshot.hasData) {
+          final _places = snapshot.data;
+          return _places.isEmpty
+              ? EmptyStateRecentSearch()
+              : RecentSearchList(
+                  places: _places,
+                  nextPage: placesProvider.getRecentPlaces,
+                );
+        } else {
+          return showLoading();
+        }
+      },
     );
   }
 }
