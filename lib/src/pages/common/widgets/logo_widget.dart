@@ -11,10 +11,13 @@ class LogoApp extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.food_bank,
-            color: Colors.white,
-            size: 100,
+          Image(
+            image: AssetImage(
+              'assets/img/logo_white.webp',
+            ),
+            height: 90,
+            width: 90,
+            fit: BoxFit.contain,
           ),
           SizedBox(
             height: 10,

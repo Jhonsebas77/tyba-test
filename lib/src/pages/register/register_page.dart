@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:tyba_test/src/pages/common/widgets/custom_flat_button.dart';
+import 'package:tyba_test/src/bloc/login_bloc.dart';
+import 'package:tyba_test/src/bloc/provider_bloc.dart';
+import 'package:tyba_test/src/pages/common/widgets/background.dart';
+import 'package:tyba_test/src/pages/common/widgets/custom_button.dart';
 import 'package:tyba_test/src/pages/common/widgets/email_input.dart';
-import 'package:tyba_test/src/pages/common/widgets/logo_widget.dart';
 import 'package:tyba_test/src/pages/common/widgets/password_input.dart';
+import 'package:tyba_test/src/providers/user_provider.dart';
+import 'package:tyba_test/src/utils/utils.dart';
 
 class RegisterPage extends StatelessWidget {
+  final userProvider = new UserProvider();
   RegisterPage({Key key}) : super(key: key);
 
   @override
@@ -12,70 +17,15 @@ class RegisterPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          _buildBackground(context),
+          Background(),
           _buildLoginForm(context),
         ],
       ),
     );
   }
 
-  Widget _buildBackgroundColor(BuildContext context) {
-    final _sizeScreen = MediaQuery.of(context).size;
-    return Container(
-      height: _sizeScreen.height * 0.4,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: <Color>[
-            Color.fromRGBO(15, 15, 18, 1.0),
-            Color.fromRGBO(89, 125, 30, 1.0)
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCircle() => Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(
-            100,
-          ),
-          color: Color.fromRGBO(
-            255,
-            255,
-            255,
-            0.05,
-          ),
-        ),
-      );
-
-  Widget _buildBackground(BuildContext context) {
-    return Stack(
-      children: [
-        _buildBackgroundColor(context),
-        Positioned(
-          top: 90,
-          left: 30,
-          child: _buildCircle(),
-        ),
-        Positioned(
-          top: -40,
-          right: -30,
-          child: _buildCircle(),
-        ),
-        Positioned(
-          bottom: -50,
-          right: -10,
-          child: _buildCircle(),
-        ),
-        LogoApp(),
-      ],
-    );
-  }
-
   Widget _buildLoginForm(BuildContext context) {
+    final bloc = Provider.of(context);
     final _sizeScreen = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(
@@ -91,7 +41,7 @@ class RegisterPage extends StatelessWidget {
               vertical: 30,
             ),
             padding: EdgeInsets.symmetric(
-              vertical: 50,
+              vertical: 20,
             ),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -114,29 +64,41 @@ class RegisterPage extends StatelessWidget {
               children: [
                 Icon(
                   Icons.person_add,
-                  color: Colors.green,
+                  color: Colors.deepPurple,
                   size: 40,
                 ),
-                Text(
-                  'Crea una cuenta para comenzar a buscar los mejores restaurantes',
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    'Crea una cuenta para comenzar a buscar los mejores restaurantes',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 SizedBox(
-                  height: 60,
+                  height: 20,
                 ),
-                EmailInput(),
+                EmailInput(
+                  bloc: bloc,
+                ),
                 SizedBox(
-                  height: 30,
+                  height: 20,
                 ),
-                PasswordInput(),
+                PasswordInput(
+                  bloc: bloc,
+                ),
                 SizedBox(
-                  height: 30,
+                  height: 20,
                 ),
-                _buildButton(),
+                _buildRegisterButton(bloc),
+                // _buildRegisterButton(bloc),
               ],
             ),
           ),
           FlatButton(
-            onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
+            onPressed: () => Navigator.pushReplacementNamed(
+              context,
+              'login',
+            ),
             child: Text('Ya tienes una cuenta?'),
           ),
           SizedBox(
@@ -147,22 +109,44 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Widget _buildButton() {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 26,
-      ),
-      child: CustomFlatButton(
-        buttonAction: () {},
-        title: 'Crear cuenta',
-        backgroundColor: Colors.green[900],
-        titleColor: Colors.white,
-        borderColor: Colors.transparent,
-        width: 100,
-        height: 50,
-        borderRadius: 5,
-        borderWidth: 2,
-      ),
+  Widget _buildRegisterButton(LoginBloc bloc) {
+    return StreamBuilder(
+      stream: bloc.formValidStream,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot snapshot,
+      ) {
+        return Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 26,
+          ),
+          child: CustomFlatButton(
+            buttonAction:
+                snapshot.hasData ? () => _register(bloc, context) : null,
+            title: 'Crear cuenta',
+            backgroundColor: Colors.deepPurple[900],
+            titleColor: Colors.white,
+            borderColor: Colors.transparent,
+            width: 100,
+            height: 50,
+            borderRadius: 5,
+            borderWidth: 2,
+          ),
+        );
+      },
     );
+  }
+
+  _register(LoginBloc bloc, BuildContext context) async {
+    Map info = await userProvider.newUser(bloc.email, bloc.password);
+    if (info['ok']) {
+      Navigator.pushReplacementNamed(context, 'home');
+    } else {
+      showAlertMessage(
+        context: context,
+        message: handlerAlertMessage(info['message']),
+        title: handlerAlertTitle(info['message']),
+      );
+    }
   }
 }
