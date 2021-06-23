@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tyba_test/src/models/places_model.dart';
 import 'package:tyba_test/src/pages/home/search/search_delegate.dart';
+import 'package:tyba_test/src/pages/home/widget/nearPlacesEmpty.dart';
 import 'package:tyba_test/src/pages/home/widget/recentSearch.dart';
 import 'package:tyba_test/src/pages/home/widget/recentSearch_empty.dart';
 import 'package:tyba_test/src/pages/login/login_page.dart';
@@ -57,23 +58,39 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 10,
                 ),
-                Container(
-                  width: 250,
-                  child: ListTile(
-                    title: Text(
-                      'Busquedas recientes',
-                    ),
-                    leading: Icon(
-                      Icons.access_time,
-                      color: Colors.deepPurple,
-                    ),
-                    dense: true,
+                ListTile(
+                  title: Text(
+                    'Busquedas recientes',
+                  ),
+                  leading: Icon(
+                    Icons.access_time,
+                    color: Colors.deepPurple,
                   ),
                 ),
                 SizedBox(
                   height: 90,
                   width: 350,
                   child: _buildRecentSearch(),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                ListTile(
+                  title: Text(
+                    'Restaurantes Cercanos',
+                  ),
+                  leading: Icon(
+                    Icons.local_dining,
+                    color: Colors.deepPurple,
+                  ),
+                ),
+                SizedBox(
+                  height: 200,
+                  width: 350,
+                  child: _buildNear(),
+                ),
+                SizedBox(
+                  height: 300,
                 ),
               ],
             ),
@@ -151,6 +168,14 @@ class _HomePageState extends State<HomePage> {
         } else {
           return showLoading();
         }
+      },
+    );
+  }
+
+  _buildNear() {
+    return NearPlacesEmpty(
+      onPress: () => {
+        print('Hola'),
       },
     );
   }
