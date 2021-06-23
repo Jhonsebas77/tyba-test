@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tyba_test/src/pages/home/search/search_delegate.dart';
 import 'package:tyba_test/src/pages/login/login_page.dart';
 import 'package:tyba_test/src/providers/user_provider.dart';
 import 'package:tyba_test/src/utils/utils.dart';
@@ -34,9 +35,7 @@ class _HomePageState extends State<HomePage> {
                   height: 20,
                 ),
                 Center(
-                  child: Text(
-                    'Bienvenido',
-                  ),
+                  child: _buildSearchButton(context),
                 ),
               ],
             ),
@@ -70,6 +69,32 @@ class _HomePageState extends State<HomePage> {
         builder: (BuildContext context) => LoginPage(),
       ),
       (route) => false,
+    );
+  }
+
+  Row _buildSearchButton(BuildContext context) {
+    return Row(
+      children: [
+        CircleAvatar(
+          backgroundColor: Colors.deepPurple,
+          foregroundColor: Colors.white,
+          child: IconButton(
+            icon: Icon(
+              Icons.search,
+            ),
+            onPressed: () => showSearch(
+              context: context,
+              delegate: DataSearch(),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: Text(
+            'Buscar Restaurantes',
+          ),
+        )
+      ],
     );
   }
 }
