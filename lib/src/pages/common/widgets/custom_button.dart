@@ -31,21 +31,22 @@ class CustomFlatButton extends StatelessWidget {
   Widget build(
     BuildContext context,
   ) {
+    bool isEnabled = buttonAction != null;
     final minWidth = width ?? double.infinity;
     final bgColor = backgroundColor ?? Colors.white;
     final minHeight = height;
     return RawMaterialButton(
-      onPressed: buttonAction,
+      onPressed: isEnabled ? buttonAction : null,
       child: Center(
         child: Text(
           title,
           textAlign: textAlign ?? TextAlign.center,
           style: TextStyle(
-            color: titleColor ?? Colors.black,
+            color: isEnabled ? titleColor : Colors.grey[600],
           ),
         ),
       ),
-      fillColor: bgColor,
+      fillColor: isEnabled ? bgColor : Colors.grey,
       splashColor: bgColor,
       constraints: BoxConstraints(
         minWidth: minWidth,
