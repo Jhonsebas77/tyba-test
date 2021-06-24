@@ -7,9 +7,8 @@ class EmptyStateRecentSearch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: 80,
+        vertical: 10,
       ),
-      width: 200,
       child: Card(
         elevation: 10.0,
         shape: RoundedRectangleBorder(

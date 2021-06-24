@@ -101,7 +101,6 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(
                   height: 90,
-                  width: 350,
                   child: _buildRecentSearch(),
                 ),
                 SizedBox(
@@ -188,10 +187,18 @@ class _HomePageState extends State<HomePage> {
         if (snapshot.hasData) {
           final _places = snapshot.data;
           return _places.isEmpty
-              ? EmptyStateRecentSearch()
-              : RecentSearchList(
-                  places: _places,
-                  nextPage: placesProvider.getRecentPlaces,
+              ? SizedBox(
+                  height: 80,
+                  width: 350,
+                  child: EmptyStateRecentSearch(),
+                )
+              : SizedBox(
+                  height: 80,
+                  width: 350,
+                  child: RecentSearchList(
+                    places: _places,
+                    nextPage: placesProvider.getRecentPlaces,
+                  ),
                 );
         } else {
           return showLoading();
