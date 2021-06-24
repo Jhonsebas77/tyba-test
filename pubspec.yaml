@@ -20,6 +20,7 @@ dependencies:
   environment_config: null
   flutter_config: null
   google_maps_flutter: 1.2.0
+  location: 3.0.2
 
 dev_dependencies:
   flutter_test:

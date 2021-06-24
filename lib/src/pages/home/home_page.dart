@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart' as UserLocation;
 import 'package:tyba_test/src/models/places_model.dart';
 import 'package:tyba_test/src/pages/home/search/search_delegate.dart';
+import 'package:tyba_test/src/pages/home/search/widgets/search_list_empty.dart';
+import 'package:tyba_test/src/pages/home/search/widgets/search_list_item.dart';
 import 'package:tyba_test/src/pages/home/widget/nearPlacesEmpty.dart';
 import 'package:tyba_test/src/pages/home/widget/recentSearch.dart';
 import 'package:tyba_test/src/pages/home/widget/recentSearch_empty.dart';
@@ -19,6 +22,35 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final userProvider = new UserProvider();
   final placesProvider = new PlacesProvider();
+
+  final location = new UserLocation.Location();
+  UserLocation.PermissionStatus _permissionGranted;
+  UserLocation.LocationData _locationData;
+
+  bool _isServiceEnabled = false;
+  bool _permissionStatusGranted = false;
+  void initState() {
+    super.initState();
+    _validateStatus();
+  }
+
+  _validateStatus() async {
+    _isServiceEnabled = await location.serviceEnabled();
+    _permissionStatusGranted =
+        _permissionGranted == UserLocation.PermissionStatus.granted;
+    setState(() {
+      _isServiceEnabled = _isServiceEnabled;
+      _permissionStatusGranted = _permissionStatusGranted;
+    });
+  }
+
+  getUserLocation() async {
+    _locationData = await location.getLocation();
+    setState(() {
+      _locationData = _locationData;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     placesProvider.getRecentPlaces();
@@ -84,11 +116,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.deepPurple,
                   ),
                 ),
-                SizedBox(
-                  height: 200,
-                  width: 350,
-                  child: _buildNear(),
-                ),
+                _buildNear(context),
                 SizedBox(
                   height: 300,
                 ),
@@ -127,29 +155,29 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Row _buildSearchButton(BuildContext context) {
-    return Row(
-      children: [
-        CircleAvatar(
-          backgroundColor: Colors.deepPurple,
-          foregroundColor: Colors.white,
-          child: IconButton(
-            icon: Icon(
+  Widget _buildSearchButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () => showSearch(
+        context: context,
+        delegate: DataSearch(),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.deepPurple,
+            foregroundColor: Colors.white,
+            child: Icon(
               Icons.search,
             ),
-            onPressed: () => showSearch(
-              context: context,
-              delegate: DataSearch(),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 20),
+            child: Text(
+              'Buscar Restaurantes',
             ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: Text(
-            'Buscar Restaurantes',
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
@@ -172,11 +200,64 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildNear() {
-    return NearPlacesEmpty(
-      onPress: () => {
-        print('Hola'),
-      },
-    );
+  _buildNear(BuildContext context) {
+    final _screenSize = MediaQuery.of(context).size;
+    bool isLocationOk = (_isServiceEnabled && _locationData != null);
+    return isLocationOk
+        ? SizedBox(
+            height: _screenSize.height * 0.45,
+            width: 350,
+            child: FutureBuilder(
+              future: placesProvider.getNearPlaces(
+                _locationData.latitude,
+                _locationData.longitude,
+              ),
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<Place>> snapshot,
+              ) {
+                if (snapshot.hasData) {
+                  final places = snapshot.data;
+                  return places.isEmpty
+                      ? SearchListItemEmpty(
+                          query: '',
+                        )
+                      : Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 10,
+                          ),
+                          child: ListView(
+                            children: places.map(
+                              (_place) {
+                                return SearchListItem(
+                                  place: _place,
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      'detail',
+                                      arguments: _place,
+                                    );
+                                  },
+                                );
+                              },
+                            ).toList(),
+                          ),
+                        );
+                } else {
+                  return showLoading();
+                }
+              },
+            ),
+          )
+        : SizedBox(
+            height: 200,
+            width: 350,
+            child: NearPlacesEmpty(
+              onPress: () async {
+                await getUserLocation();
+                setState(() {});
+              },
+            ),
+          );
   }
 }
