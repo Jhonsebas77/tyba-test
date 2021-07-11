@@ -32,7 +32,7 @@ class SearchListItem extends StatelessWidget {
             ),
             child: FadeInImage(
               image: NetworkImage(
-                place.icon,
+                place.getRestaurantImage(),
               ),
               placeholder: AssetImage(
                 'assets/img/no-image.jpg',

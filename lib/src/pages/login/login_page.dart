@@ -150,7 +150,7 @@ class LoginPage extends StatelessWidget {
         BuildContext context,
         AsyncSnapshot snapshot,
       ) {
-        return Container(
+        return Padding(
           padding: EdgeInsets.symmetric(
             horizontal: 26,
           ),

@@ -21,6 +21,7 @@ class Place {
   String formattedAddress;
   String vicinity;
   Geometry geometry;
+  List<Photo> photos;
   String icon;
   String name;
   String placeId;
@@ -30,6 +31,7 @@ class Place {
     this.formattedAddress,
     this.vicinity,
     this.geometry,
+    this.photos,
     this.icon,
     this.name,
     this.placeId,
@@ -45,6 +47,13 @@ class Place {
         name: json["name"],
         placeId: json["place_id"],
         rating: json["rating"] == null ? 0 : json["rating"].toDouble(),
+        photos: json["photos"] == null
+            ? []
+            : List<Photo>.from(
+                json["photos"].map(
+                  (x) => Photo.fromJson(x),
+                ),
+              ),
       );
 
   Map<String, dynamic> toJson() => {
@@ -54,7 +63,25 @@ class Place {
         "name": name,
         "place_id": placeId,
         "rating": rating,
+        "photos": photos == null
+            ? null
+            : List<dynamic>.from(
+                photos.map(
+                  (x) => x.toJson(),
+                ),
+              ),
       };
+
+  getRestaurantImage() {
+    if (photos.isEmpty)
+      return 'https://i.pinimg.com/474x/f3/be/1b/f3be1b55efcf32cca0476638e6e6bcdb.jpg';
+    else {
+      final _apiKey = 'AIzaSyA9TnsNNqSjszAGulESj9zy4_-exjcowGo';
+      final _photoReference = photos[0].photoReference;
+      final _maxwidth = 400;
+      return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=$_maxwidth&photoreference=$_photoReference&key=$_apiKey';
+    }
+  }
 }
 
 class Geometry {
@@ -90,5 +117,34 @@ class Location {
   Map<String, dynamic> toJson() => {
         "lat": lat,
         "lng": lng,
+      };
+}
+
+class Photo {
+  Photo({
+    this.height,
+    this.htmlAttributions,
+    this.photoReference,
+    this.width,
+  });
+
+  int height;
+  List<String> htmlAttributions;
+  String photoReference;
+  int width;
+
+  factory Photo.fromJson(Map<String, dynamic> json) => Photo(
+        height: json["height"],
+        htmlAttributions:
+            List<String>.from(json["html_attributions"].map((x) => x)),
+        photoReference: json["photo_reference"],
+        width: json["width"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "height": height,
+        "html_attributions": List<dynamic>.from(htmlAttributions.map((x) => x)),
+        "photo_reference": photoReference,
+        "width": width,
       };
 }
